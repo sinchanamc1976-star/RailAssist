@@ -180,16 +180,30 @@
 
   function addIncident(data) {
     const incidents = getIncidents();
+
+    // Determine locationSource based on what data was provided
+    const hasGps    = data.latitude != null && data.longitude != null;
+    const hasManual = data.location && data.location.trim().length > 0;
+    let locationSource = 'manual';
+    if (hasGps && hasManual) locationSource = 'both';
+    else if (hasGps)         locationSource = 'GPS';
+
     const incident = {
-      id: getNextId(),
-      trainId: data.trainId.trim().toUpperCase(),
-      category: data.category,
+      id:          getNextId(),
+      trainId:     data.trainId.trim().toUpperCase(),
+      category:    data.category,
       description: data.description.trim(),
-      location: data.location.trim(),
-      priority: data.priority,
-      status: 'Reported',
-      reportedBy: data.reportedBy || 'Unknown',
-      createdAt: new Date().toISOString(),
+      location:    data.location ? data.location.trim() : '',
+      priority:    data.priority,
+      status:      'Reported',
+      reportedBy:  data.reportedBy || 'Unknown',
+      createdAt:   new Date().toISOString(),
+      // GPS fields – only stored when captured; null means not captured
+      latitude:        hasGps ? data.latitude        : null,
+      longitude:       hasGps ? data.longitude       : null,
+      accuracyMeters:  hasGps ? data.accuracyMeters  : null,
+      locationSource:  locationSource,
+      gpsCapturedAt:   hasGps ? data.gpsCapturedAt   : null,
     };
     incidents.unshift(incident);
     saveIncidents(incidents);

@@ -14,6 +14,14 @@
     currentView: 'dashboard',
     currentTheme: 'light',
     confirmCallback: null,
+    // GPS state for the active Report Fault form session
+    gps: {
+      capturing: false,
+      latitude:      null,
+      longitude:     null,
+      accuracyMeters: null,
+      capturedAt:    null,
+    },
   };
 
   /* ============================================================
@@ -290,8 +298,18 @@
         </div>
         <div class="detail-row full">
           <span class="detail-label">Location</span>
-          <span class="detail-value">${esc(inc.location)}</span>
+          <span class="detail-value">${esc(inc.location) || '<em>Not specified</em>'}</span>
         </div>
+        ${inc.latitude != null ? `
+        <div class="detail-row full">
+          <span class="detail-label">GPS Coordinates</span>
+          <span class="detail-value gps-coords-display">
+            <span class="gps-coord-pill">📍 ${inc.latitude.toFixed(6)}, ${inc.longitude.toFixed(6)}</span>
+            ${inc.accuracyMeters != null ? `<span class="gps-accuracy-pill">±${inc.accuracyMeters} m accuracy</span>` : ''}
+            <span class="gps-source-pill">${esc(inc.locationSource || 'GPS')}</span>
+            ${inc.gpsCapturedAt ? `<br><small class="gps-captured-time">Captured: ${formatDate(inc.gpsCapturedAt)}</small>` : ''}
+          </span>
+        </div>` : ''}
         <div class="detail-row full">
           <span class="detail-label">Description</span>
           <span class="detail-value">${esc(inc.description)}</span>
@@ -304,6 +322,7 @@
           <span class="detail-label">Last Updated</span>
           <span class="detail-value">${formatDate(inc.updatedAt)}</span>
         </div>` : ''}
+
         ${(mode === 'update' && can('canUpdateStatus') && inc.status !== 'Resolved') ? `
         <div class="detail-row full status-selector">
           <label for="modal-status-select">Update Status</label>
@@ -376,10 +395,15 @@
   function setupReportForm() {
     const form = $('fault-report-form');
 
+    // Clear button – also resets GPS state
     $('btn-clear-form').addEventListener('click', () => {
       form.reset();
       clearFormErrors();
+      resetGpsState();
     });
+
+    // GPS button – only captures on explicit click
+    $('btn-use-gps').addEventListener('click', captureGPS);
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -390,6 +414,109 @@
       submitReport();
     });
   }
+
+  /* ---- GPS helpers ---- */
+
+  function resetGpsState() {
+    State.gps = { capturing: false, latitude: null, longitude: null, accuracyMeters: null, capturedAt: null };
+    // Clear hidden fields
+    ['f-gps-lat','f-gps-lng','f-gps-accuracy','f-gps-captured-at'].forEach(id => {
+      const el = $(id);
+      if (el) el.value = '';
+    });
+    setGpsStatus('', null);
+    const btn = $('btn-use-gps');
+    const lbl = $('gps-btn-label');
+    if (btn) btn.disabled = false;
+    if (lbl) lbl.textContent = 'Use My Current Location';
+    const icon = btn ? btn.querySelector('.gps-btn-icon') : null;
+    if (icon) icon.textContent = '📍';
+  }
+
+  function setGpsStatus(message, type) {
+    const el = $('gps-status');
+    if (!el) return;
+    if (!message) { el.style.display = 'none'; el.textContent = ''; return; }
+    el.style.display = 'flex';
+    el.className = 'gps-status gps-status-' + (type || 'info');
+    el.innerHTML = message;
+  }
+
+  function captureGPS() {
+    // Guard: already capturing
+    if (State.gps.capturing) return;
+
+    // Guard: browser support
+    if (!navigator.geolocation) {
+      setGpsStatus('⚠️ Geolocation is not supported by this browser. Enter location manually.', 'error');
+      return;
+    }
+
+    State.gps.capturing = true;
+    const btn = $('btn-use-gps');
+    const lbl = $('gps-btn-label');
+    const icon = btn ? btn.querySelector('.gps-btn-icon') : null;
+
+    if (btn) btn.disabled = true;
+    if (lbl) lbl.textContent = 'Locating…';
+    if (icon) icon.textContent = '⏳';
+    setGpsStatus('📡 Requesting location, please wait…', 'loading');
+
+    const OPTIONS = {
+      enableHighAccuracy: true,
+      timeout:            10000,   // 10 s
+      maximumAge:         0,
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      // ---- SUCCESS ----
+      function (position) {
+        State.gps.capturing     = false;
+        State.gps.latitude      = position.coords.latitude;
+        State.gps.longitude     = position.coords.longitude;
+        State.gps.accuracyMeters = position.coords.accuracy != null
+          ? Math.round(position.coords.accuracy)
+          : null;
+        State.gps.capturedAt    = new Date().toISOString();
+
+        // Persist to hidden fields so submitReport can read them
+        $('f-gps-lat').value          = State.gps.latitude;
+        $('f-gps-lng').value          = State.gps.longitude;
+        $('f-gps-accuracy').value     = State.gps.accuracyMeters ?? '';
+        $('f-gps-captured-at').value  = State.gps.capturedAt;
+
+        // Update button to show captured state
+        if (btn) btn.disabled = false;
+        if (lbl) lbl.textContent = 'Location Captured ✓';
+        if (icon) icon.textContent = '✅';
+
+        const accText = State.gps.accuracyMeters != null
+          ? ` &nbsp;·&nbsp; Accuracy: ±${State.gps.accuracyMeters} m`
+          : '';
+        setGpsStatus(
+          `✅ <strong>GPS captured:</strong> ${State.gps.latitude.toFixed(6)}, ${State.gps.longitude.toFixed(6)}${accText}
+           <br><small>Add a station/landmark name in the Location field above for context.</small>`,
+          'success'
+        );
+      },
+      // ---- ERROR ----
+      function (err) {
+        State.gps.capturing = false;
+        if (btn) btn.disabled = false;
+        if (lbl) lbl.textContent = 'Use My Current Location';
+        if (icon) icon.textContent = '📍';
+
+        const MESSAGES = {
+          1: '🚫 Location permission denied. Please allow location access in your browser settings and try again.',
+          2: '📡 Location unavailable. Check your device settings or enter location manually.',
+          3: '⏱️ Location request timed out. Move to an open area and try again, or enter location manually.',
+        };
+        setGpsStatus(MESSAGES[err.code] || `❌ Location error (code ${err.code}). Enter location manually.`, 'error');
+      },
+      OPTIONS
+    );
+  }
+
 
   function validateReportForm() {
     clearFormErrors();
@@ -456,17 +583,33 @@
   function submitReport() {
     if (!validateReportForm()) return;
 
+    // Read GPS hidden fields (populated by captureGPS if used)
+    const rawLat = $('f-gps-lat').value;
+    const rawLng = $('f-gps-lng').value;
+    const rawAcc = $('f-gps-accuracy').value;
+    const rawCapturedAt = $('f-gps-captured-at').value;
+
+    const latitude  = rawLat ? parseFloat(rawLat)   : null;
+    const longitude = rawLng ? parseFloat(rawLng)   : null;
+    const accuracyMeters = rawAcc ? parseInt(rawAcc, 10) : null;
+
     const incident = RailData.addIncident({
-      trainId:     $('f-train-id').value,
-      category:    $('f-category').value,
-      description: $('f-description').value,
-      location:    $('f-location').value,
-      priority:    $('f-priority').value,
-      reportedBy:  State.currentRole,
+      trainId:      $('f-train-id').value,
+      category:     $('f-category').value,
+      description:  $('f-description').value,
+      location:     $('f-location').value,
+      priority:     $('f-priority').value,
+      reportedBy:   State.currentRole,
+      // GPS fields — null when not captured
+      latitude,
+      longitude,
+      accuracyMeters,
+      gpsCapturedAt: rawCapturedAt || null,
     });
 
     $('fault-report-form').reset();
     clearFormErrors();
+    resetGpsState();   // clear GPS widget state after submit
 
     showToast(`Fault report submitted! Incident ID: ${incident.id}`, 'success', incident.id);
   }

@@ -989,3 +989,156 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
   color: var(--accent);
   font-weight: 500;
 }
+
+/* ============================================================
+   GPS WIDGET – added for GPS location capture feature
+   ============================================================ */
+
+/* Container below the Location input */
+.gps-widget {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* GPS button – distinct from other form buttons */
+.btn-gps {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.48rem 1rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #1565c0;
+  background: #e8f1ff;
+  border: 1.5px solid #90b8f8;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  width: fit-content;
+}
+.btn-gps:hover:not(:disabled) {
+  background: #cde0ff;
+  border-color: #1565c0;
+}
+.btn-gps:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+[data-theme="dark"] .btn-gps {
+  color: #90b8f8;
+  background: #0d1a30;
+  border-color: #2a4a80;
+}
+[data-theme="dark"] .btn-gps:hover:not(:disabled) {
+  background: #142040;
+  border-color: #90b8f8;
+}
+
+.gps-btn-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* GPS status message panel */
+.gps-status {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  border: 1px solid;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+.gps-status small {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+/* Loading state */
+.gps-status-loading {
+  background: #e8f1ff;
+  color: #1a4a90;
+  border-color: #90b8f8;
+}
+[data-theme="dark"] .gps-status-loading {
+  background: #0d1a30;
+  color: #90b8f8;
+  border-color: #2a4a80;
+}
+
+/* Success state */
+.gps-status-success {
+  background: var(--status-resolved-bg);
+  color: var(--status-resolved-text);
+  border-color: #4caf50;
+}
+
+/* Error state */
+.gps-status-error {
+  background: var(--status-reported-bg);
+  color: var(--status-reported-text);
+  border-color: #e57373;
+}
+
+/* ---- GPS coordinates in incident detail modal ---- */
+.gps-coords-display {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  line-height: 1.8;
+}
+
+.gps-coord-pill {
+  display: inline-block;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.84rem;
+  font-weight: 600;
+  background: #e8f1ff;
+  color: #1565c0;
+  border: 1px solid #90b8f8;
+  border-radius: 4px;
+  padding: 0.15rem 0.5rem;
+}
+[data-theme="dark"] .gps-coord-pill {
+  background: #0d1a30;
+  color: #90b8f8;
+  border-color: #2a4a80;
+}
+
+.gps-accuracy-pill {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--status-resolved-bg);
+  color: var(--status-resolved-text);
+  border-radius: 4px;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid #4caf50;
+}
+
+.gps-source-pill {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--accent-light);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 0.15rem 0.5rem;
+}
+
+.gps-captured-time {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  margin-top: 0.1rem;
+}
