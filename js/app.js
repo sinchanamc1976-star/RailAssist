@@ -315,13 +315,41 @@
           <span class="detail-value">${esc(inc.description)}</span>
         </div>
         <div class="detail-row">
-          <span class="detail-label">Created</span>
-          <span class="detail-value">${formatDate(inc.createdAt)}</span>
+          <span class="detail-label">Reported</span>
+          <span class="detail-value">${formatDate(inc.reportedAt || inc.createdAt)}</span>
         </div>
-        ${inc.updatedAt ? `<div class="detail-row">
+        ${inc.startedAt ? `
+        <div class="detail-row">
+          <span class="detail-label">Work Started</span>
+          <span class="detail-value">${formatDate(inc.startedAt)}</span>
+        </div>` : ''}
+        ${inc.resolvedAt ? `
+        <div class="detail-row">
+          <span class="detail-label">Resolved</span>
+          <span class="detail-value">${formatDate(inc.resolvedAt)}</span>
+        </div>` : ''}
+        ${inc.updatedAt && !inc.startedAt && !inc.resolvedAt ? `
+        <div class="detail-row">
           <span class="detail-label">Last Updated</span>
           <span class="detail-value">${formatDate(inc.updatedAt)}</span>
         </div>` : ''}
+
+        <div class="detail-row full status-history-row">
+          <span class="detail-label">Status History</span>
+          <div class="status-history-container">
+            ${(inc.statusHistory && inc.statusHistory.length > 0 ? inc.statusHistory : [
+              { status: 'Reported', timestamp: inc.reportedAt || inc.createdAt }
+            ]).map(item => `
+              <div class="history-item">
+                <div class="history-bullet"></div>
+                <div class="history-details">
+                  <span class="history-status">${statusBadge(item.status)}</span>
+                  <span class="history-time">${formatDate(item.timestamp)}</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
 
         ${(mode === 'update' && can('canUpdateStatus') && inc.status !== 'Resolved') ? `
         <div class="detail-row full status-selector">
@@ -383,6 +411,7 @@
     if (ok) {
       closeModal();
       renderIncidentsTable();
+      renderDashboard();
       showToast(`Incident ${id} updated to "${newStatus}".`, 'success');
     } else {
       showToast('Failed to update status. Please try again.', 'error');
