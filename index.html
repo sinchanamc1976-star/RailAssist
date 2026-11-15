@@ -96,11 +96,26 @@
               <strong>Control Room</strong>
               <span class="role-desc">Manage all incidents &amp; update statuses</span>
             </button>
-            <button class="role-card" data-role="Maintenance Staff">
+            <button class="role-card" data-role="Maintenance Staff" id="role-card-maintenance">
               <span class="role-icon">🔧</span>
               <strong>Maintenance Staff</strong>
               <span class="role-desc">View &amp; update assigned incidents</span>
             </button>
+          </div>
+          <div id="maintenance-identity-section" class="maintenance-identity-box" style="display: none;">
+            <div class="maintenance-identity-header">
+              <span class="staff-badge">🔧 Maintenance Staff Identity</span>
+              <p>Select your technician profile to view your assigned work:</p>
+            </div>
+            <div class="maintenance-identity-controls">
+              <div class="form-group">
+                <label for="login-staff-select">Technician Name</label>
+                <select id="login-staff-select" class="form-control"></select>
+              </div>
+              <button id="btn-login-staff-confirm" class="btn btn-primary btn-block">
+                Continue as Maintenance Staff →
+              </button>
+            </div>
           </div>
           <div class="login-footer">
             <p>⚠️ This is a demonstration prototype. No real authentication is used.</p>
@@ -135,7 +150,7 @@
             <span class="user-avatar" id="sidebar-user-avatar">👤</span>
             <div>
               <strong id="sidebar-user-role">Role</strong>
-              <small>Demo User</small>
+              <small id="sidebar-user-subtitle">Demo User</small>
             </div>
           </div>
           <button id="btn-logout" class="btn btn-sm btn-outline">Logout</button>
@@ -311,6 +326,7 @@
                       <th>Location</th>
                       <th>Priority</th>
                       <th>Status</th>
+                      <th>Assigned To</th>
                       <th>Actions</th>
                     </tr>
                   </thead>

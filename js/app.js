@@ -11,6 +11,7 @@
      ============================================================ */
   const State = {
     currentRole: null,
+    currentStaff: null,
     currentView: 'dashboard',
     currentTheme: 'light',
     confirmCallback: null,
@@ -32,16 +33,19 @@
       canReport: true,
       canViewIncidents: true,
       canUpdateStatus: false,
+      canAssignStaff: false,
     },
     'Control Room': {
       canReport: false,
       canViewIncidents: true,
       canUpdateStatus: true,
+      canAssignStaff: true,
     },
     'Maintenance Staff': {
       canReport: false,
       canViewIncidents: true,
       canUpdateStatus: true,
+      canAssignStaff: false,
     },
   };
 
@@ -140,9 +144,16 @@
   /* ============================================================
      LOGIN / LOGOUT
      ============================================================ */
-  function loginAs(role) {
+  function loginAs(role, staffMember) {
     State.currentRole = role;
     RailData.saveRole(role);
+    if (role === 'Maintenance Staff') {
+      State.currentStaff = staffMember || RailData.getStaff() || RailData.getMaintenanceStaff()[0];
+      RailData.saveStaff(State.currentStaff);
+    } else {
+      State.currentStaff = null;
+      RailData.clearStaff();
+    }
     applyRoleUI(role);
     showPage('app');
     showView('dashboard');
@@ -152,8 +163,21 @@
     // Sidebar user info
     const avatars = { 'Loco Pilot': '🚂', 'Control Room': '🖥️', 'Maintenance Staff': '🔧' };
     $('sidebar-user-avatar').textContent = avatars[role] || '👤';
-    $('sidebar-user-role').textContent = role;
-    $('topbar-role-badge').textContent = role;
+
+    const roleSubtitle = $('sidebar-user-subtitle');
+    if (role === 'Maintenance Staff' && State.currentStaff) {
+      $('sidebar-user-role').textContent = State.currentStaff.name;
+      if (roleSubtitle) roleSubtitle.textContent = `Maintenance Staff (${State.currentStaff.id})`;
+      $('topbar-role-badge').textContent = `🔧 ${State.currentStaff.name}`;
+    } else if (role === 'Control Room') {
+      $('sidebar-user-role').textContent = role;
+      if (roleSubtitle) roleSubtitle.textContent = 'System Controller';
+      $('topbar-role-badge').textContent = role;
+    } else {
+      $('sidebar-user-role').textContent = role;
+      if (roleSubtitle) roleSubtitle.textContent = 'Train Operator';
+      $('topbar-role-badge').textContent = role;
+    }
 
     // Report Fault nav visibility
     const reportNav = $('nav-report-fault');
@@ -166,15 +190,46 @@
 
   function logout() {
     State.currentRole = null;
+    State.currentStaff = null;
     RailData.clearRole();
+    RailData.clearStaff();
+    hideMaintenanceSelect();
     showPage('login');
+  }
+
+  /* ---- Demo Login Maintenance Staff Selector Helpers ---- */
+  function populateLoginStaffSelect() {
+    const sel = $('login-staff-select');
+    if (!sel) return;
+    const staffList = RailData.getMaintenanceStaff();
+    sel.innerHTML = staffList.map(s => `
+      <option value="${s.id}">
+        ${esc(s.name)} — ${esc(s.specialty)} (${esc(s.id)})
+      </option>
+    `).join('');
+  }
+
+  function showMaintenanceSelect() {
+    const box = $('maintenance-identity-section');
+    const card = $('role-card-maintenance');
+    if (box) box.style.display = 'block';
+    if (card) card.classList.add('selected');
+    populateLoginStaffSelect();
+  }
+
+  function hideMaintenanceSelect() {
+    const box = $('maintenance-identity-section');
+    const card = $('role-card-maintenance');
+    if (box) box.style.display = 'none';
+    if (card) card.classList.remove('selected');
   }
 
   /* ============================================================
      DASHBOARD
      ============================================================ */
   function renderDashboard() {
-    const stats = RailData.getStats();
+    const isStaff = State.currentRole === 'Maintenance Staff' && State.currentStaff;
+    const stats = isStaff ? RailData.getStats(State.currentStaff.id) : RailData.getStats();
     $('stat-total').textContent     = stats.total;
     $('stat-reported').textContent  = stats.reported;
     $('stat-inprogress').textContent= stats.inProgress;
@@ -183,11 +238,19 @@
   }
 
   function renderRecentIncidents() {
-    const incidents = RailData.getIncidents().slice(0, 6);
+    const isStaff = State.currentRole === 'Maintenance Staff' && State.currentStaff;
+    let incidents = RailData.getIncidents();
+    if (isStaff) {
+      incidents = incidents.filter(i => i.assignedTo === State.currentStaff.id);
+    }
+    incidents = incidents.slice(0, 6);
     const container = $('recent-incidents-list');
 
     if (incidents.length === 0) {
-      container.innerHTML = '<div class="empty-state"><span>📋</span><p>No incidents reported yet.</p></div>';
+      const msg = isStaff
+        ? `No incidents assigned to ${esc(State.currentStaff.name)} yet.`
+        : 'No incidents reported yet.';
+      container.innerHTML = `<div class="empty-state"><span>📋</span><p>${msg}</p></div>`;
       return;
     }
 
@@ -214,6 +277,12 @@
     const statusVal = $('filter-status').value;
     let incidents   = RailData.getIncidents();
 
+    // Maintenance Staff: display only incidents assigned to current technician
+    const isStaff = State.currentRole === 'Maintenance Staff' && State.currentStaff;
+    if (isStaff) {
+      incidents = incidents.filter(i => i.assignedTo === State.currentStaff.id);
+    }
+
     if (searchVal) {
       incidents = incidents.filter(i => i.id.toLowerCase().includes(searchVal));
     }
@@ -229,6 +298,11 @@
       tbody.innerHTML = '';
       table.style.display = 'none';
       empty.style.display = 'block';
+      if (isStaff && !searchVal && !statusVal) {
+        empty.innerHTML = `<span>🔧</span><p>No incidents assigned to ${esc(State.currentStaff.name)} at this time.</p>`;
+      } else {
+        empty.innerHTML = `<span>🗂️</span><p>No incidents found matching your search.</p>`;
+      }
       return;
     }
 
@@ -243,9 +317,11 @@
         <td>${esc(inc.location)}</td>
         <td>${priorityBadge(inc.priority)}</td>
         <td>${statusBadge(inc.status)}</td>
+        <td>${assignedBadge(inc)}</td>
         <td>
           <div class="table-actions">
             <button class="btn-view" data-id="${esc(inc.id)}" title="View details">View</button>
+            ${can('canAssignStaff') ? `<button class="btn-assign" data-id="${esc(inc.id)}" title="${inc.assignedTo ? 'Change staff assignment' : 'Assign maintenance staff'}">${inc.assignedTo ? 'Reassign' : 'Assign'}</button>` : ''}
             ${can('canUpdateStatus') ? `<button class="btn-status" data-id="${esc(inc.id)}" ${inc.status === 'Resolved' ? 'disabled' : ''} title="Update status">Update</button>` : ''}
           </div>
         </td>
@@ -255,6 +331,9 @@
     // Bind row action buttons
     tbody.querySelectorAll('.btn-view').forEach(btn => {
       btn.addEventListener('click', () => openIncidentModal(btn.dataset.id, 'view'));
+    });
+    tbody.querySelectorAll('.btn-assign').forEach(btn => {
+      btn.addEventListener('click', () => openIncidentModal(btn.dataset.id, 'assign'));
     });
     tbody.querySelectorAll('.btn-status').forEach(btn => {
       btn.addEventListener('click', () => openIncidentModal(btn.dataset.id, 'update'));
@@ -269,6 +348,69 @@
     if (!inc) return;
 
     $('modal-title').textContent = `Incident ${esc(inc.id)}`;
+
+    let assignHtml = '';
+    if (can('canAssignStaff')) {
+      const staffList = RailData.getMaintenanceStaff();
+      let staffOpts = '';
+      for (let i = 0; i < staffList.length; i++) {
+        const s = staffList[i];
+        const isSel = (inc.assignedTo === s.id) ? ' selected' : '';
+        staffOpts += `<option value="${s.id}"${isSel}>${esc(s.name)} — ${esc(s.specialty)} (${esc(s.id)})</option>`;
+      }
+      const unassignLabel = inc.assignedTo ? 'Remove Assignment (Unassign)' : 'Select Maintenance Staff';
+      const labelText = inc.assignedTo ? 'Change Assigned Staff' : 'Assign Maintenance Staff';
+      const quickBtn = (mode === 'view') ? '<button type="button" id="btn-quick-assign" class="btn btn-sm btn-primary">Save Assignment</button>' : '';
+
+      assignHtml = `
+        <div class="detail-row full assignment-selector-row">
+          <label for="modal-assign-select" class="detail-label">${labelText}</label>
+          <div class="assign-control-group">
+            <select id="modal-assign-select" class="form-control">
+              <option value="">-- ${unassignLabel} --</option>
+              ${staffOpts}
+            </select>
+            ${quickBtn}
+          </div>
+        </div>
+      `;
+    }
+
+    let statusHtml = '';
+    if (mode === 'update' && can('canUpdateStatus') && inc.status !== 'Resolved') {
+      let opts = '<option value="" disabled selected>-- Select new status --</option>';
+      if (inc.status === 'Reported') {
+        opts += '<option value="Reported" disabled>Reported (current)</option>';
+        opts += '<option value="In Progress">In Progress</option>';
+        opts += '<option value="Resolved">Resolved</option>';
+      } else if (inc.status === 'In Progress') {
+        opts += '<option value="In Progress" disabled>In Progress (current)</option>';
+        opts += '<option value="Resolved">Resolved</option>';
+      }
+      statusHtml = `
+        <div class="detail-row full status-selector">
+          <label for="modal-status-select">Update Status</label>
+          <select id="modal-status-select">
+            ${opts}
+          </select>
+        </div>
+      `;
+    }
+
+    const historyList = (inc.statusHistory && inc.statusHistory.length > 0)
+      ? inc.statusHistory
+      : [{ status: 'Reported', timestamp: inc.reportedAt || inc.createdAt }];
+
+    let historyHtml = '';
+    for (let i = 0; i < historyList.length; i++) {
+      const hItem = historyList[i];
+      historyHtml += '<div class="history-item">';
+      historyHtml += '<div class="history-bullet"></div>';
+      historyHtml += '<div class="history-details">';
+      historyHtml += '<span class="history-status">' + statusBadge(hItem.status) + '</span>';
+      historyHtml += '<span class="history-time">' + formatDate(hItem.timestamp) + '</span>';
+      historyHtml += '</div></div>';
+    }
 
     $('modal-body').innerHTML = `
       <div class="detail-grid">
@@ -296,6 +438,17 @@
           <span class="detail-label">Reported By</span>
           <span class="detail-value">${esc(inc.reportedBy || 'N/A')}</span>
         </div>
+        <div class="detail-row">
+          <span class="detail-label">Assigned Staff</span>
+          <span class="detail-value" id="modal-assigned-display">
+            ${inc.assignedToName ? `<strong>🔧 ${esc(inc.assignedToName)}</strong>` : '<em class="text-muted">Unassigned</em>'}
+          </span>
+        </div>
+        ${inc.assignedAt ? `
+        <div class="detail-row">
+          <span class="detail-label">Assigned At</span>
+          <span class="detail-value">${formatDate(inc.assignedAt)}</span>
+        </div>` : ''}
         <div class="detail-row full">
           <span class="detail-label">Location</span>
           <span class="detail-value">${esc(inc.location) || '<em>Not specified</em>'}</span>
@@ -337,49 +490,72 @@
         <div class="detail-row full status-history-row">
           <span class="detail-label">Status History</span>
           <div class="status-history-container">
-            ${(inc.statusHistory && inc.statusHistory.length > 0 ? inc.statusHistory : [
-              { status: 'Reported', timestamp: inc.reportedAt || inc.createdAt }
-            ]).map(item => `
-              <div class="history-item">
-                <div class="history-bullet"></div>
-                <div class="history-details">
-                  <span class="history-status">${statusBadge(item.status)}</span>
-                  <span class="history-time">${formatDate(item.timestamp)}</span>
-                </div>
-              </div>
-            `).join('')}
+            ${historyHtml}
           </div>
         </div>
 
-        ${(mode === 'update' && can('canUpdateStatus') && inc.status !== 'Resolved') ? `
-        <div class="detail-row full status-selector">
-          <label for="modal-status-select">Update Status</label>
-          <select id="modal-status-select">
-            <option value="" disabled selected>-- Select new status --</option>
-            ${inc.status !== 'Reported'    ? '' : '<option value="Reported" disabled>Reported (current)</option>'}
-            ${inc.status === 'Reported'    ? '<option value="In Progress">In Progress</option>' : ''}
-            ${inc.status !== 'In Progress' ? '' : '<option value="In Progress" disabled>In Progress (current)</option>'}
-            ${inc.status === 'In Progress' ? '<option value="Resolved">Resolved</option>' : ''}
-            ${inc.status === 'Reported'    ? '<option value="Resolved">Resolved</option>' : ''}
-          </select>
-        </div>` : ''}
+        ${assignHtml}
+        ${statusHtml}
       </div>
     `;
+
+    // Wire quick-assign button if present
+    const quickAssignBtn = $('btn-quick-assign');
+    if (quickAssignBtn) {
+      quickAssignBtn.addEventListener('click', () => {
+        const sel = $('modal-assign-select');
+        doAssignment(inc.id, sel ? sel.value : null);
+      });
+    }
 
     const footer = $('modal-footer');
     footer.innerHTML = '';
 
-    if (mode === 'update' && can('canUpdateStatus') && inc.status !== 'Resolved') {
+    if (mode === 'assign' && can('canAssignStaff')) {
+      const saveAssignBtn = document.createElement('button');
+      saveAssignBtn.className = 'btn btn-primary';
+      saveAssignBtn.textContent = 'Save Assignment';
+      saveAssignBtn.addEventListener('click', () => {
+        const sel = $('modal-assign-select');
+        doAssignment(inc.id, sel ? sel.value : null);
+      });
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.className = 'btn btn-outline';
+      cancelBtn.textContent = 'Cancel';
+      cancelBtn.addEventListener('click', closeModal);
+
+      footer.appendChild(cancelBtn);
+      footer.appendChild(saveAssignBtn);
+    } else if (mode === 'update' && can('canUpdateStatus') && inc.status !== 'Resolved') {
       const saveBtn = document.createElement('button');
       saveBtn.className = 'btn btn-primary';
-      saveBtn.textContent = 'Save Status';
+      saveBtn.textContent = 'Save Changes';
       saveBtn.addEventListener('click', () => {
-        const sel = $('modal-status-select');
-        if (!sel || !sel.value) {
-          showToast('Please select a new status.', 'error');
-          return;
+        const selStatus = $('modal-status-select');
+        const selAssign = $('modal-assign-select');
+        let didChange = false;
+
+        // Save assignment if changed by Control Room
+        if (can('canAssignStaff') && selAssign && selAssign.value !== (inc.assignedTo || '')) {
+          RailData.assignIncident(inc.id, selAssign.value || null);
+          didChange = true;
         }
-        doStatusUpdate(inc.id, sel.value);
+
+        // Save status if selected
+        if (selStatus && selStatus.value) {
+          RailData.updateIncidentStatus(inc.id, selStatus.value);
+          didChange = true;
+        }
+
+        if (didChange) {
+          closeModal();
+          renderIncidentsTable();
+          renderDashboard();
+          showToast(`Incident ${inc.id} updated successfully.`, 'success');
+        } else {
+          showToast('Please select a new status or staff assignment.', 'error');
+        }
       });
 
       const cancelBtn = document.createElement('button');
@@ -415,6 +591,23 @@
       showToast(`Incident ${id} updated to "${newStatus}".`, 'success');
     } else {
       showToast('Failed to update status. Please try again.', 'error');
+    }
+  }
+
+  function doAssignment(id, staffId) {
+    const ok = RailData.assignIncident(id, staffId || null);
+    if (ok) {
+      closeModal();
+      renderIncidentsTable();
+      renderDashboard();
+      if (staffId) {
+        const staff = RailData.getMaintenanceStaffById(staffId);
+        showToast(`Incident ${id} assigned to ${staff ? staff.name : staffId}.`, 'success');
+      } else {
+        showToast(`Incident ${id} is now unassigned.`, 'info');
+      }
+    } else {
+      showToast('Failed to update assignment.', 'error');
     }
   }
 
@@ -755,6 +948,13 @@
     return `<span class="badge ${cls}">${esc(priority)}</span>`;
   }
 
+  function assignedBadge(inc) {
+    if (inc.assignedToName) {
+      return `<span class="badge-assigned" title="Assigned to ${esc(inc.assignedToName)} (${esc(inc.assignedTo || '')})">🔧 ${esc(inc.assignedToName)}</span>`;
+    }
+    return `<span class="badge-unassigned">Unassigned</span>`;
+  }
+
   function formatDate(isoString) {
     if (!isoString) return 'N/A';
     try {
@@ -795,9 +995,29 @@
 
     // Login page
     $('login-theme-toggle').addEventListener('click', toggleTheme);
+    populateLoginStaffSelect();
+
     $$('.role-card').forEach(card => {
-      card.addEventListener('click', () => loginAs(card.dataset.role));
+      card.addEventListener('click', () => {
+        const role = card.dataset.role;
+        if (role === 'Maintenance Staff') {
+          showMaintenanceSelect();
+        } else {
+          hideMaintenanceSelect();
+          loginAs(role);
+        }
+      });
     });
+
+    const staffLoginConfirm = $('btn-login-staff-confirm');
+    if (staffLoginConfirm) {
+      staffLoginConfirm.addEventListener('click', () => {
+        const sel = $('login-staff-select');
+        const staffId = sel ? sel.value : null;
+        const staff = RailData.getMaintenanceStaffById(staffId) || RailData.getMaintenanceStaff()[0];
+        loginAs('Maintenance Staff', staff);
+      });
+    }
 
     // App shell
     $('app-theme-toggle').addEventListener('click', toggleTheme);
@@ -851,6 +1071,10 @@
     const savedRole = RailData.getRole();
     if (savedRole && Permissions[savedRole]) {
       State.currentRole = savedRole;
+      if (savedRole === 'Maintenance Staff') {
+        State.currentStaff = RailData.getStaff() || RailData.getMaintenanceStaff()[0];
+        RailData.saveStaff(State.currentStaff);
+      }
       applyRoleUI(savedRole);
       showPage('app');
       showView('dashboard');

@@ -13,7 +13,16 @@
     seeded:    'ra_seeded',
     theme:     'ra_theme',
     role:      'ra_role',
+    staff:     'ra_staff',
   };
+
+  /* ---- Predefined Maintenance Staff ---- */
+  const MAINTENANCE_STAFF = [
+    { id: 'MS-01', name: 'Rajesh Kumar', specialty: 'Electrical & Pantograph' },
+    { id: 'MS-02', name: 'Amit Sharma',  specialty: 'Mechanical & Bogies' },
+    { id: 'MS-03', name: 'Priya Patel',  specialty: 'Signals & Telecom' },
+    { id: 'MS-04', name: 'Vikram Singh', specialty: 'Track & Brakes' },
+  ];
 
   /* ---- Sample / Seed Data ---- */
   const SAMPLE_INCIDENTS = [
@@ -30,6 +39,9 @@
       reportedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
       startedAt: null,
       resolvedAt: null,
+      assignedTo: null,
+      assignedToName: null,
+      assignedAt: null,
       statusHistory: [
         { status: 'Reported', timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() },
       ],
@@ -47,6 +59,9 @@
       reportedAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
       startedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
       resolvedAt: null,
+      assignedTo: 'MS-04',
+      assignedToName: 'Vikram Singh',
+      assignedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
       statusHistory: [
         { status: 'Reported', timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString() },
         { status: 'In Progress', timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString() },
@@ -65,6 +80,9 @@
       reportedAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
       startedAt: new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString(),
       resolvedAt: null,
+      assignedTo: 'MS-03',
+      assignedToName: 'Priya Patel',
+      assignedAt: new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString(),
       statusHistory: [
         { status: 'Reported', timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString() },
         { status: 'In Progress', timestamp: new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString() },
@@ -83,6 +101,9 @@
       reportedAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
       startedAt: null,
       resolvedAt: null,
+      assignedTo: null,
+      assignedToName: null,
+      assignedAt: null,
       statusHistory: [
         { status: 'Reported', timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString() },
       ],
@@ -100,6 +121,9 @@
       reportedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
       startedAt: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString(),
       resolvedAt: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString(),
+      assignedTo: 'MS-01',
+      assignedToName: 'Rajesh Kumar',
+      assignedAt: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString(),
       statusHistory: [
         { status: 'Reported', timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() },
         { status: 'In Progress', timestamp: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString() },
@@ -119,6 +143,9 @@
       reportedAt: new Date(Date.now() - 30 * 60 * 60 * 1000).toISOString(),
       startedAt: new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString(),
       resolvedAt: new Date(Date.now() - 22 * 60 * 60 * 1000).toISOString(),
+      assignedTo: 'MS-02',
+      assignedToName: 'Amit Sharma',
+      assignedAt: new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString(),
       statusHistory: [
         { status: 'Reported', timestamp: new Date(Date.now() - 30 * 60 * 60 * 1000).toISOString() },
         { status: 'In Progress', timestamp: new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString() },
@@ -138,6 +165,9 @@
       reportedAt: new Date(Date.now() - 36 * 60 * 60 * 1000).toISOString(),
       startedAt: null,
       resolvedAt: null,
+      assignedTo: null,
+      assignedToName: null,
+      assignedAt: null,
       statusHistory: [
         { status: 'Reported', timestamp: new Date(Date.now() - 36 * 60 * 60 * 1000).toISOString() },
       ],
@@ -155,6 +185,9 @@
       reportedAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
       startedAt: new Date(Date.now() - 44 * 60 * 60 * 1000).toISOString(),
       resolvedAt: null,
+      assignedTo: 'MS-02',
+      assignedToName: 'Amit Sharma',
+      assignedAt: new Date(Date.now() - 44 * 60 * 60 * 1000).toISOString(),
       statusHistory: [
         { status: 'Reported', timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString() },
         { status: 'In Progress', timestamp: new Date(Date.now() - 44 * 60 * 60 * 1000).toISOString() },
@@ -173,6 +206,9 @@
       reportedAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
       startedAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
       resolvedAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+      assignedTo: 'MS-01',
+      assignedToName: 'Rajesh Kumar',
+      assignedAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
       statusHistory: [
         { status: 'Reported', timestamp: new Date(Date.now() - 60 * 60 * 1000).toISOString() },
         { status: 'In Progress', timestamp: new Date(Date.now() - 45 * 60 * 1000).toISOString() },
@@ -192,6 +228,9 @@
       reportedAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
       startedAt: null,
       resolvedAt: null,
+      assignedTo: null,
+      assignedToName: null,
+      assignedAt: null,
       statusHistory: [
         { status: 'Reported', timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString() },
       ],
@@ -229,6 +268,10 @@
     if (inc.resolvedAt === undefined) {
       inc.resolvedAt = inc.status === 'Resolved' ? (inc.updatedAt || inc.createdAt || null) : null;
     }
+    if (inc.assignedTo === undefined)     inc.assignedTo = null;
+    if (inc.assignedToName === undefined) inc.assignedToName = null;
+    if (inc.assignedAt === undefined)     inc.assignedAt = null;
+
     if (!Array.isArray(inc.statusHistory) || inc.statusHistory.length === 0) {
       const history = [
         { status: 'Reported', timestamp: inc.reportedAt }
@@ -304,6 +347,9 @@
       reportedAt:  now,
       startedAt:   null,
       resolvedAt:  null,
+      assignedTo:     data.assignedTo || null,
+      assignedToName: data.assignedToName || null,
+      assignedAt:     data.assignedTo ? (data.assignedAt || now) : null,
       statusHistory: [
         { status: 'Reported', timestamp: now }
       ],
@@ -368,13 +414,48 @@
     return true;
   }
 
+  function assignIncident(id, staffId) {
+    const incidents = getIncidents();
+    const idx = incidents.findIndex(i => i.id === id);
+    if (idx === -1) return false;
+
+    const staff = MAINTENANCE_STAFF.find(s => s.id === staffId);
+    const now = new Date().toISOString();
+
+    if (staff) {
+      incidents[idx].assignedTo = staff.id;
+      incidents[idx].assignedToName = staff.name;
+      incidents[idx].assignedAt = now;
+    } else {
+      incidents[idx].assignedTo = null;
+      incidents[idx].assignedToName = null;
+      incidents[idx].assignedAt = null;
+    }
+
+    incidents[idx].updatedAt = now;
+    saveIncidents(incidents);
+    return true;
+  }
+
   function getIncidentById(id) {
     return getIncidents().find(i => i.id === id) || null;
   }
 
+  /* ---- Maintenance Staff Queries ---- */
+  function getMaintenanceStaff() {
+    return MAINTENANCE_STAFF.slice();
+  }
+
+  function getMaintenanceStaffById(id) {
+    return MAINTENANCE_STAFF.find(s => s.id === id) || null;
+  }
+
   /* ---- Stats ---- */
-  function getStats() {
-    const incidents = getIncidents();
+  function getStats(staffId) {
+    let incidents = getIncidents();
+    if (staffId) {
+      incidents = incidents.filter(i => i.assignedTo === staffId);
+    }
     return {
       total:      incidents.length,
       reported:   incidents.filter(i => i.status === 'Reported').length,
@@ -392,6 +473,11 @@
   function saveRole(role) { save(KEYS.role, role); }
   function clearRole()    { localStorage.removeItem(KEYS.role); }
 
+  /* ---- Staff Identity persistence ---- */
+  function getStaff()       { return load(KEYS.staff) || null; }
+  function saveStaff(staff) { save(KEYS.staff, staff); }
+  function clearStaff()     { localStorage.removeItem(KEYS.staff); }
+
   /* ---- Public API ---- */
   window.RailData = {
     init,
@@ -399,13 +485,19 @@
     getIncidents,
     addIncident,
     updateIncidentStatus,
+    assignIncident,
     getIncidentById,
+    getMaintenanceStaff,
+    getMaintenanceStaffById,
     getStats,
     getTheme,
     saveTheme,
     getRole,
     saveRole,
     clearRole,
+    getStaff,
+    saveStaff,
+    clearStaff,
   };
 
 })(window);
