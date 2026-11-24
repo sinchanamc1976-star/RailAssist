@@ -13,7 +13,7 @@
     currentRole: null,
     currentStaff: null,
     currentView: 'dashboard',
-    currentTheme: 'light',
+    currentTheme: 'dark',
     confirmCallback: null,
     // GPS state for the active Report Fault form session
     gps: {
@@ -234,7 +234,67 @@
     $('stat-reported').textContent  = stats.reported;
     $('stat-inprogress').textContent= stats.inProgress;
     $('stat-resolved').textContent  = stats.resolved;
+    renderCategoryDistribution();
     renderRecentIncidents();
+  }
+
+  function renderCategoryDistribution() {
+    const bar = $('category-distribution-bar');
+    const legend = $('category-distribution-legend');
+    if (!bar || !legend) return;
+
+    const isStaff = State.currentRole === 'Maintenance Staff' && State.currentStaff;
+    let incidents = RailData.getIncidents();
+    if (isStaff) {
+      incidents = incidents.filter(i => i.assignedTo === State.currentStaff.id);
+    }
+
+    const total = incidents.length;
+    if (total === 0) {
+      bar.innerHTML = '<div class="category-segment empty" style="width:100%"></div>';
+      legend.innerHTML = '<span class="text-muted">No operational incidents in active queue.</span>';
+      return;
+    }
+
+    const counts = {};
+    incidents.forEach(inc => {
+      const cat = inc.category || 'Other';
+      counts[cat] = (counts[cat] || 0) + 1;
+    });
+
+    const colors = {
+      'Electrical':   '#38bdf8',
+      'Mechanical':   '#e07b2a',
+      'Brakes':       '#f87171',
+      'Signal':       '#a78bfa',
+      'Track':        '#34d399',
+      'HVAC':         '#60a5fa',
+      'Pantograph':   '#fbbf24',
+      'Door System':  '#f472b6',
+      'Bogies':       '#94a3b8',
+      'Other':        '#64748b',
+    };
+
+    const sortedCats = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+
+    bar.innerHTML = sortedCats.map(cat => {
+      const pct = ((counts[cat] / total) * 100).toFixed(1);
+      const col = colors[cat] || '#38bdf8';
+      return `<div class="category-segment" style="width:${pct}%; background-color:${col};" title="${esc(cat)}: ${counts[cat]} (${pct}%)"></div>`;
+    }).join('');
+
+    legend.innerHTML = sortedCats.map(cat => {
+      const count = counts[cat];
+      const pct = Math.round((count / total) * 100);
+      const col = colors[cat] || '#38bdf8';
+      return `
+        <div class="category-legend-item">
+          <span class="legend-dot" style="background-color:${col};"></span>
+          <span class="legend-name">${esc(cat)}</span>
+          <span class="legend-val">${count} <small>(${pct}%)</small></span>
+        </div>
+      `;
+    }).join('');
   }
 
   function renderRecentIncidents() {
@@ -968,6 +1028,15 @@
     }
   }
 
+  function updateClock() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-IN', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const dashClock = $('dashboard-clock');
+    const topClock = $('topbar-clock');
+    if (dashClock) dashClock.textContent = `${timeStr} IST`;
+    if (topClock) topClock.textContent = `${timeStr} IST`;
+  }
+
   /* ============================================================
      INIT
      ============================================================ */
@@ -975,8 +1044,12 @@
     // Initialize data layer
     RailData.init();
 
-    // Apply saved theme (light is default)
+    // Apply saved theme (dark is default)
     applyTheme(RailData.getTheme());
+
+    // Live operations clock
+    updateClock();
+    setInterval(updateClock, 1000);
 
     // Create sidebar overlay for mobile
     createOverlay();
@@ -995,6 +1068,10 @@
 
     // Login page
     $('login-theme-toggle').addEventListener('click', toggleTheme);
+    const backLandingBtn = $('btn-back-to-landing');
+    if (backLandingBtn) {
+      backLandingBtn.addEventListener('click', () => showPage('landing'));
+    }
     populateLoginStaffSelect();
 
     $$('.role-card').forEach(card => {

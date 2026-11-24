@@ -465,7 +465,7 @@
   }
 
   /* ---- Theme persistence ---- */
-  function getTheme()       { return load(KEYS.theme) || 'light'; }
+  function getTheme()       { return load(KEYS.theme) || 'dark'; }
   function saveTheme(theme) { save(KEYS.theme, theme); }
 
   /* ---- Role persistence ---- */

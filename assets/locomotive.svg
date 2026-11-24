@@ -1,0 +1,419 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 680" class="loco-wireframe-svg" aria-label="Electric Locomotive Technical Wireframe">
+  <defs>
+    <!-- Cyan subtle linear gradient -->
+    <linearGradient id="cyan-glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0.2"/>
+    </linearGradient>
+    
+    <!-- Steel blue linework gradient -->
+    <linearGradient id="steel-fade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#627d98" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#29394d" stop-opacity="0.45"/>
+    </linearGradient>
+
+    <!-- Rail track perspective gradient -->
+    <linearGradient id="rail-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.65"/>
+      <stop offset="60%" stop-color="#486581" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#152132" stop-opacity="0.1"/>
+    </linearGradient>
+
+    <!-- Headlight radial soft beam -->
+    <radialGradient id="headlight-beam" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e8edf5" stop-opacity="0.75"/>
+      <stop offset="40%" stop-color="#38bdf8" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#0b111b" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Grid pattern for background telemetry -->
+    <pattern id="telemetry-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#29394d" stroke-width="0.5" stroke-opacity="0.25"/>
+      <circle cx="0" cy="0" r="1" fill="#38bdf8" fill-opacity="0.35"/>
+    </pattern>
+  </defs>
+
+  <!-- Background subtle telemetry grid -->
+  <rect x="0" y="0" width="1000" height="680" fill="url(#telemetry-grid)" />
+
+  <!-- Technical Calibration Crosses & Callouts -->
+  <g class="tech-marks" stroke="#38bdf8" stroke-width="0.75" opacity="0.4">
+    <!-- Top-left coordinate -->
+    <path d="M 40 40 L 60 40 M 50 30 L 50 50" />
+    <text x="70" y="44" fill="#9aa9bc" font-family="'Courier New', Courier, monospace" font-size="9" letter-spacing="1">COORD: 22.5726°N 88.3639°E [TRACK-01]</text>
+    
+    <!-- Top-right telemetry -->
+    <path d="M 940 40 L 960 40 M 950 30 L 950 50" />
+    <text x="790" y="44" fill="#9aa9bc" font-family="'Courier New', Courier, monospace" font-size="9" letter-spacing="1">OHE: 25 kV AC / 50 Hz [STABLE]</text>
+
+    <!-- Bottom callout -->
+    <text x="50" y="640" fill="#627d98" font-family="'Courier New', Courier, monospace" font-size="9" letter-spacing="1.5">SYS.REF: WAP-7 3-PHASE AC TRACTION // GTO-VVVF INVERTER</text>
+    <text x="710" y="640" fill="#38bdf8" font-family="'Courier New', Courier, monospace" font-size="9" opacity="0.75">STATUS: TRACTION CONTROL NOMINAL</text>
+  </g>
+
+  <!-- ==========================================
+       RAILWAY TRACKS IN 3-POINT PERSPECTIVE
+       Perspective origin: High right/center (x:720, y:240)
+       Sweeping towards bottom-left & bottom-center
+       ========================================== -->
+  <g id="railway-tracks" class="tracks-group">
+    <!-- Sleepers / Ties (Wooden/Concrete transverse supports) -->
+    <g stroke="#29394d" stroke-width="1.2" opacity="0.55" fill="none">
+      <!-- Distant sleepers -->
+      <line x1="680" y1="360" x2="745" y2="352" />
+      <line x1="655" y1="380" x2="735" y2="370" />
+      <line x1="625" y1="405" x2="725" y2="390" />
+      <line x1="590" y1="432" x2="715" y2="412" />
+      <!-- Mid-distance sleepers -->
+      <line x1="545" y1="465" x2="705" y2="438" />
+      <line x1="490" y1="500" x2="695" y2="465" />
+      <line x1="420" y1="540" x2="685" y2="495" />
+      <line x1="330" y1="585" x2="675" y2="530" />
+      <!-- Foreground sleepers with 3D profile -->
+      <polygon points="220,635 660,570 655,582 210,648" stroke="#486581" stroke-width="1.2" fill="#111a28" fill-opacity="0.45"/>
+      <polygon points="80,695 640,615 632,630 65,712" stroke="#486581" stroke-width="1.5" fill="#111a28" fill-opacity="0.45"/>
+    </g>
+
+    <!-- Sleeper ballast centerline guides -->
+    <path d="M 710 355 L 350 670" stroke="#38bdf8" stroke-width="0.75" stroke-dasharray="4 6" opacity="0.35" fill="none" />
+
+    <!-- Left Rail (Outer curve) - Base, Web, Head in technical wireframe -->
+    <!-- Base plate -->
+    <path d="M 688 358 L 225 636 L 85 696" stroke="#29394d" stroke-width="1" fill="none" opacity="0.65"/>
+    <!-- Web and Head -->
+    <path d="M 686 357 L 220 632 L 80 690" stroke="#486581" stroke-width="1.8" fill="none"/>
+    <!-- Top running surface with cyan light reflection -->
+    <path d="M 685 355 L 218 630 L 76 687" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.8" fill="none"/>
+
+    <!-- Right Rail (Inner curve) -->
+    <!-- Base plate -->
+    <path d="M 738 352 L 662 572 L 638 618" stroke="#29394d" stroke-width="1" fill="none" opacity="0.65"/>
+    <!-- Web and Head -->
+    <path d="M 736 350 L 658 568 L 634 614" stroke="#486581" stroke-width="1.8" fill="none"/>
+    <!-- Top running surface -->
+    <path d="M 735 348 L 656 566 L 632 611" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.75" fill="none"/>
+
+    <!-- Track fasteners / Pandrol clips ticks -->
+    <g stroke="#38bdf8" stroke-width="1" opacity="0.45">
+      <circle cx="230" cy="632" r="2" fill="none"/>
+      <circle cx="652" cy="572" r="2" fill="none"/>
+      <circle cx="338" cy="582" r="1.5" fill="none"/>
+      <circle cx="670" cy="532" r="1.5" fill="none"/>
+      <circle cx="430" cy="536" r="1.5" fill="none"/>
+      <circle cx="682" cy="497" r="1.5" fill="none"/>
+    </g>
+  </g>
+
+  <!-- ==========================================
+       OVERHEAD CATENARY WIRE & MAST SYSTEM (OHE)
+       ========================================== -->
+  <g id="catenary-system" stroke="#29394d" stroke-width="0.8" opacity="0.45" fill="none">
+    <!-- Catenary support dropper wire -->
+    <line x1="200" y1="30" x2="850" y2="110" stroke-dasharray="2 4"/>
+    <!-- Contact wire (25 kV live wire) -->
+    <line x1="210" y1="65" x2="860" y2="140" stroke="#38bdf8" stroke-opacity="0.5" stroke-width="1"/>
+    <!-- Droppers between messenger and contact wire -->
+    <line x1="300" y1="42" x2="305" y2="76"/>
+    <line x1="420" y1="56" x2="425" y2="90"/>
+    <line x1="540" y1="70" x2="545" y2="104"/>
+    <line x1="660" y1="85" x2="665" y2="118"/>
+  </g>
+
+  <!-- ==========================================
+       ELECTRIC LOCOMOTIVE – 3/4 FRONT VIEW
+       Facing viewer, angled slightly right
+       ========================================== -->
+  <g id="locomotive-body">
+
+    <!-- 1. ROOF PANTOGRAPH ASSEMBLY (Wireframe High Voltage Unit) -->
+    <g id="pantograph" stroke="#486581" stroke-width="1.2" fill="none">
+      <!-- Roof mounting base insulators -->
+      <g stroke="#38bdf8" stroke-width="1.2" opacity="0.75">
+        <!-- 4 Ceramic insulator pillars -->
+        <ellipse cx="430" cy="180" rx="6" ry="3" />
+        <line x1="430" y1="180" x2="430" y2="188"/>
+        <ellipse cx="480" cy="172" rx="6" ry="3" />
+        <line x1="480" y1="172" x2="480" y2="180"/>
+        <ellipse cx="530" cy="192" rx="5" ry="2.5" />
+        <line x1="530" y1="192" x2="530" y2="200"/>
+        <ellipse cx="580" cy="184" rx="5" ry="2.5" />
+        <line x1="580" y1="184" x2="580" y2="192"/>
+      </g>
+
+      <!-- Pantograph Lower Arms (articulated diamond) -->
+      <line x1="440" y1="178" x2="485" y2="120" stroke="#627d98" stroke-width="1.5"/>
+      <line x1="560" y1="182" x2="510" y2="122" stroke="#627d98" stroke-width="1.5"/>
+      <line x1="455" y1="180" x2="495" y2="122" stroke-dasharray="2 3"/>
+
+      <!-- Central Knee Joint -->
+      <circle cx="485" cy="120" r="3" stroke="#38bdf8" stroke-width="1.5" fill="#152132"/>
+      <circle cx="510" cy="122" r="3" stroke="#38bdf8" stroke-width="1.5" fill="#152132"/>
+      <line x1="485" y1="120" x2="510" y2="122" stroke="#38bdf8" stroke-width="1.5"/>
+
+      <!-- Upper Pantograph V-frame Arms -->
+      <line x1="485" y1="120" x2="465" y2="72" stroke="#627d98" stroke-width="1.5"/>
+      <line x1="510" y1="122" x2="475" y2="72" stroke="#627d98" stroke-width="1.5"/>
+
+      <!-- Collector Head / Contact Shoe (horizontally touching catenary) -->
+      <g stroke="#38bdf8" stroke-width="1.8" opacity="0.95">
+        <path d="M 425 76 Q 435 72 450 72 L 490 72 Q 505 72 515 76" />
+        <path d="M 430 78 L 510 78" stroke-width="1"/>
+        <line x1="450" y1="72" x2="450" y2="78"/>
+        <line x1="490" y1="72" x2="490" y2="78"/>
+      </g>
+
+      <!-- Electrical Arc / Contact Spark Highlight -->
+      <circle cx="470" cy="72" r="2.5" fill="#e8edf5" stroke="#38bdf8" stroke-width="1.5"/>
+      <line x1="464" y1="68" x2="476" y2="76" stroke="#38bdf8" stroke-width="0.8" opacity="0.7"/>
+      <line x1="476" y1="68" x2="464" y2="76" stroke="#38bdf8" stroke-width="0.8" opacity="0.7"/>
+
+      <!-- Roof busbar & vacuum circuit breaker -->
+      <path d="M 495 178 L 570 170 L 640 185" stroke="#486581" stroke-width="1.2" stroke-dasharray="4 3"/>
+      <rect x="590" y="172" width="22" height="10" rx="3" stroke="#486581" stroke-width="1.2" fill="#111a28"/>
+    </g>
+
+    <!-- 2. MAIN CAB BODY (Aerodynamic 3/4 Wireframe Hull) -->
+    <g id="loco-roof" stroke="#486581" stroke-width="1.5" fill="none">
+      <!-- Curved roof dome across front cab -->
+      <path d="M 330 250 Q 400 200 480 195 Q 560 190 620 205" />
+      <path d="M 480 195 L 770 245" stroke="#334e68" stroke-width="1.2"/>
+      <path d="M 620 205 L 810 255" stroke="#334e68" stroke-width="1.2"/>
+      <path d="M 770 245 Q 790 250 810 255"/>
+
+      <!-- Roof ribs / lateral reinforcement -->
+      <g stroke="#29394d" stroke-width="0.8" opacity="0.7">
+        <line x1="530" y1="202" x2="570" y2="210"/>
+        <line x1="580" y1="211" x2="620" y2="219"/>
+        <line x1="630" y1="220" x2="670" y2="228"/>
+        <line x1="680" y1="229" x2="720" y2="237"/>
+        <line x1="730" y1="238" x2="770" y2="246"/>
+      </g>
+    </g>
+
+    <!-- Aerodynamic Windshield Visor & Upper Cab Front -->
+    <g id="cab-upper" stroke="#627d98" stroke-width="1.5" fill="none">
+      <!-- Upper brow overhang -->
+      <path d="M 320 258 L 475 220 L 585 235" stroke="#38bdf8" stroke-width="1.6" stroke-opacity="0.85"/>
+      <path d="M 320 258 L 330 250"/>
+      <path d="M 475 220 L 480 195"/>
+      <path d="M 585 235 L 620 205"/>
+
+      <!-- Twin High-Intensity Center Headlights -->
+      <g id="top-headlight">
+        <polygon points="460,205 490,200 490,214 460,219" stroke="#38bdf8" stroke-width="1.5" fill="#111a28"/>
+        <circle cx="469" cy="211" r="4.5" stroke="#38bdf8" stroke-width="1.5" fill="#152132"/>
+        <circle cx="481" cy="208" r="4.5" stroke="#38bdf8" stroke-width="1.5" fill="#152132"/>
+        <circle cx="469" cy="211" r="2.5" fill="#e8edf5" opacity="0.95"/>
+        <circle cx="481" cy="208" r="2.5" fill="#e8edf5" opacity="0.95"/>
+        <polygon points="465,212 485,208 410,260 370,270" fill="url(#headlight-beam)" opacity="0.35"/>
+      </g>
+
+      <!-- Windscreen Glass Panes -->
+      <polygon points="330,265 470,228 468,285 338,310" stroke="#38bdf8" stroke-width="1.4" stroke-opacity="0.8" fill="#111a28" fill-opacity="0.5"/>
+      <polygon points="476,228 575,242 568,296 474,285" stroke="#38bdf8" stroke-width="1.4" stroke-opacity="0.8" fill="#111a28" fill-opacity="0.5"/>
+      <line x1="470" y1="228" x2="474" y2="285" stroke="#627d98" stroke-width="2.5"/>
+
+      <!-- Windshield Wiper Arms -->
+      <g stroke="#627d98" stroke-width="1.2">
+        <line x1="400" y1="300" x2="425" y2="255"/>
+        <line x1="420" y1="250" x2="435" y2="265"/>
+        <line x1="520" y1="290" x2="538" y2="258"/>
+        <line x1="534" y1="255" x2="546" y2="268"/>
+      </g>
+    </g>
+
+    <!-- Nose Cone, Bonnet & Front Grille -->
+    <g id="cab-nose" stroke="#486581" stroke-width="1.5" fill="none">
+      <!-- Nose shelf deck -->
+      <polygon points="338,310 468,285 568,296 550,335 460,345 320,355" stroke="#29394d" stroke-width="1.2" fill="#111a28" fill-opacity="0.6"/>
+      <!-- Central nose crease line -->
+      <line x1="468" y1="285" x2="460" y2="345" stroke="#38bdf8" stroke-width="1.8" stroke-opacity="0.85"/>
+      <line x1="460" y1="345" x2="455" y2="435" stroke="#38bdf8" stroke-width="2" stroke-opacity="0.95"/>
+
+      <!-- Left nose chamfer -->
+      <polygon points="320,355 460,345 455,435 295,445" stroke="#334e68" stroke-width="1.5" fill="#0b111b" fill-opacity="0.5"/>
+      <!-- Right nose chamfer -->
+      <polygon points="460,345 550,335 560,425 455,435" stroke="#334e68" stroke-width="1.5" fill="#0b111b" fill-opacity="0.5"/>
+
+      <!-- Grille louvers on nose -->
+      <g stroke="#29394d" stroke-width="1" opacity="0.85">
+        <line x1="340" y1="375" x2="435" y2="368"/>
+        <line x1="342" y1="388" x2="437" y2="381"/>
+        <line x1="345" y1="401" x2="440" y2="394"/>
+        <line x1="348" y1="414" x2="442" y2="407"/>
+
+        <!-- RailAssist Emblem Hexagon on Nose -->
+        <polygon points="458,365 470,362 476,372 470,382 458,382 452,372" stroke="#38bdf8" stroke-width="1.5" fill="#152132"/>
+        <circle cx="464" cy="372" r="3" stroke="#38bdf8" stroke-width="1" fill="#38bdf8" fill-opacity="0.6"/>
+      </g>
+
+      <!-- Twin Lower Ditch Lights -->
+      <g id="ditch-light-left">
+        <rect x="320" y="415" width="24" height="16" rx="3" stroke="#38bdf8" stroke-width="1.5" fill="#111a28"/>
+        <circle cx="332" cy="423" r="5" stroke="#38bdf8" stroke-width="1.5" fill="#152132"/>
+        <circle cx="332" cy="423" r="2.5" fill="#e8edf5" opacity="0.95"/>
+      </g>
+      <g id="ditch-light-right">
+        <polygon points="525,405 548,402 548,418 525,420" stroke="#38bdf8" stroke-width="1.5" fill="#111a28"/>
+        <circle cx="536" cy="411" r="5" stroke="#38bdf8" stroke-width="1.5" fill="#152132"/>
+        <circle cx="536" cy="411" r="2.5" fill="#e8edf5" opacity="0.95"/>
+      </g>
+    </g>
+
+    <!-- Side Flank & Engine Body (Perspective depth) -->
+    <g id="loco-side" stroke="#334e68" stroke-width="1.4" fill="none">
+      <polygon points="585,242 660,254 652,305 578,297" stroke="#38bdf8" stroke-width="1.2" stroke-opacity="0.65" fill="#0b111b" fill-opacity="0.5"/>
+      <rect x="572" y="255" width="6" height="24" rx="2" stroke="#486581" stroke-width="1.2"/>
+      <polygon points="670,256 710,262 702,410 662,405" stroke="#29394d" stroke-width="1.2"/>
+      <circle cx="678" cy="335" r="2" stroke="#38bdf8" stroke-width="1"/>
+      <line x1="664" y1="280" x2="664" y2="395" stroke="#486581" stroke-width="1.2"/>
+
+      <polygon points="710,262 830,282 815,415 702,410" stroke="#29394d" stroke-width="1.2" fill="#0b111b" fill-opacity="0.6"/>
+
+      <!-- Resistor louvers & Stencil Markings -->
+      <g stroke="#29394d" stroke-width="1">
+        <rect x="725" y="278" width="40" height="22" stroke="#334e68" stroke-width="1"/>
+        <line x1="730" y1="284" x2="760" y2="284"/>
+        <line x1="730" y1="289" x2="760" y2="289"/>
+        <line x1="730" y1="294" x2="760" y2="294"/>
+
+        <rect x="775" y="286" width="38" height="22" stroke="#334e68" stroke-width="1"/>
+        <line x1="780" y1="292" x2="808" y2="292"/>
+        <line x1="780" y1="297" x2="808" y2="297"/>
+        <line x1="780" y1="302" x2="808" y2="302"/>
+
+        <text x="725" y="340" fill="#486581" font-family="'Courier New', Courier, monospace" font-size="8" letter-spacing="1">IR // WAP-7 // 30201</text>
+        <text x="725" y="354" fill="#29394d" font-family="'Courier New', Courier, monospace" font-size="7">ELECTRIC LOCO SHED ELS-HWH</text>
+      </g>
+    </g>
+
+    <!-- 3. UNDERFRAME, BUFFER BEAM & PILOT -->
+    <g id="underframe">
+      <polygon points="285,445 455,435 565,423 560,455 450,470 280,480" stroke="#38bdf8" stroke-width="1.6" stroke-opacity="0.9" fill="#152132" fill-opacity="0.75"/>
+      <line x1="280" y1="480" x2="450" y2="470" stroke="#627d98" stroke-width="2"/>
+      <line x1="450" y1="470" x2="560" y2="455" stroke="#627d98" stroke-width="2"/>
+
+      <!-- Buffers -->
+      <g id="buffer-left" stroke="#486581" stroke-width="1.4">
+        <polygon points="260,452 285,450 283,472 258,475" fill="#111a28"/>
+        <ellipse cx="256" cy="463" rx="7" ry="14" stroke="#38bdf8" stroke-width="1.5" fill="#152132"/>
+        <line x1="256" y1="452" x2="256" y2="474" stroke="#38bdf8" stroke-width="1"/>
+      </g>
+      <g id="buffer-right" stroke="#486581" stroke-width="1.4">
+        <polygon points="562,430 588,426 585,446 560,450" fill="#111a28"/>
+        <ellipse cx="588" cy="436" rx="6" ry="12" stroke="#38bdf8" stroke-width="1.5" fill="#152132"/>
+      </g>
+
+      <!-- Coupler -->
+      <g id="coupler" stroke="#627d98" stroke-width="1.5" fill="#0b111b">
+        <polygon points="425,462 465,458 468,485 428,490"/>
+        <polygon points="415,480 455,475 470,488 450,505 410,498" stroke="#38bdf8" stroke-width="1.8"/>
+        <circle cx="438" cy="488" r="3" stroke="#38bdf8" stroke-width="1.5" fill="#38bdf8"/>
+        <line x1="390" y1="465" x2="438" y2="488" stroke="#627d98" stroke-width="1.5"/>
+      </g>
+
+      <!-- Air Brake Hoses -->
+      <g stroke="#38bdf8" stroke-width="1.2" opacity="0.8" fill="none">
+        <path d="M 370 470 Q 365 500 380 508"/>
+        <path d="M 385 468 Q 380 495 395 505"/>
+        <path d="M 485 462 Q 495 490 480 502"/>
+        <circle cx="380" cy="508" r="2" fill="#38bdf8"/>
+        <circle cx="395" cy="505" r="2" fill="#38bdf8"/>
+        <circle cx="480" cy="502" r="2" fill="#38bdf8"/>
+      </g>
+
+      <!-- Pilot / Cowcatcher -->
+      <g id="cowcatcher" stroke="#334e68" stroke-width="1.4" fill="none">
+        <polygon points="250,515 440,545 540,500 540,470 440,495 250,488" stroke="#38bdf8" stroke-width="1.6" stroke-opacity="0.9" fill="#0b111b" fill-opacity="0.5"/>
+        <line x1="240" y1="525" x2="440" y2="555" stroke="#38bdf8" stroke-width="2" stroke-opacity="0.95"/>
+        <line x1="440" y1="555" x2="550" y2="505" stroke="#38bdf8" stroke-width="2" stroke-opacity="0.95"/>
+
+        <g stroke="#29394d" stroke-width="1.2">
+          <line x1="280" y1="492" x2="275" y2="528"/>
+          <line x1="310" y1="495" x2="305" y2="533"/>
+          <line x1="340" y1="499" x2="335" y2="538"/>
+          <line x1="370" y1="503" x2="368" y2="542"/>
+          <line x1="405" y1="507" x2="405" y2="548"/>
+          <line x1="440" y1="495" x2="440" y2="555" stroke="#38bdf8" stroke-width="1.8"/>
+          <line x1="470" y1="500" x2="472" y2="542"/>
+          <line x1="500" y1="503" x2="505" y2="528"/>
+        </g>
+      </g>
+    </g>
+
+    <!-- 4. RUNNING GEAR – BOGIES & WHEELSETS -->
+    <g id="bogies" stroke="#29394d" stroke-width="1.2" fill="none">
+      <polygon points="230,550 420,578 580,510 575,475 420,520 235,510" stroke="#334e68" stroke-width="1.4" fill="#0b111b" fill-opacity="0.6"/>
+
+      <!-- Wheel 1 -->
+      <g id="wheel-1">
+        <ellipse cx="230" cy="625" rx="22" ry="42" stroke="#38bdf8" stroke-width="1.8" stroke-opacity="0.85" fill="#111a28" fill-opacity="0.7"/>
+        <ellipse cx="230" cy="625" rx="16" ry="32" stroke="#486581" stroke-width="1.2"/>
+        <circle cx="230" cy="625" r="7" stroke="#38bdf8" stroke-width="1.5" fill="#152132"/>
+        <circle cx="230" cy="625" r="3" fill="#38bdf8"/>
+        <path d="M 205 600 Q 202 625 208 650" stroke="#627d98" stroke-width="2.5"/>
+        <circle cx="230" cy="667" r="1.5" fill="#38bdf8"/>
+      </g>
+
+      <!-- Wheel 2 -->
+      <g id="wheel-2">
+        <ellipse cx="340" cy="578" rx="18" ry="34" stroke="#486581" stroke-width="1.5" fill="#0b111b" fill-opacity="0.7"/>
+        <ellipse cx="340" cy="578" rx="13" ry="25" stroke="#29394d" stroke-width="1"/>
+        <circle cx="340" cy="578" r="6" stroke="#38bdf8" stroke-width="1.2" fill="#152132"/>
+        <path d="M 334 540 Q 346 543 334 547 Q 346 550 334 554 Q 346 557 334 561" stroke="#38bdf8" stroke-width="1.2" fill="none"/>
+      </g>
+
+      <!-- Wheel 3 -->
+      <g id="wheel-3">
+        <ellipse cx="440" cy="535" rx="15" ry="28" stroke="#334e68" stroke-width="1.2" fill="#0b111b" fill-opacity="0.7"/>
+        <circle cx="440" cy="535" r="5" stroke="#38bdf8" stroke-width="1" fill="#152132"/>
+      </g>
+
+      <!-- Right Side Wheels -->
+      <g id="wheels-right" opacity="0.65">
+        <ellipse cx="648" cy="565" rx="12" ry="26" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.75" fill="#111a28"/>
+        <circle cx="648" cy="565" r="4" stroke="#38bdf8" stroke-width="1"/>
+        <ellipse cx="675" cy="528" rx="10" ry="22" stroke="#334e68" stroke-width="1.2"/>
+        <circle cx="675" cy="528" r="3.5" stroke="#334e68" stroke-width="1"/>
+      </g>
+
+      <!-- Traction Motor Casings -->
+      <line x1="245" y1="620" x2="325" y2="575" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.75"/>
+      <line x1="355" y1="575" x2="425" y2="535" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.75"/>
+      <path d="M 220 570 L 210 655" stroke="#486581" stroke-width="1.2" stroke-dasharray="3 2"/>
+    </g>
+
+  </g>
+
+  <!-- ==========================================
+       TECHNICAL HUD OVERLAYS & TELEMETRY LABELS
+       ========================================== -->
+  <g class="hud-telemetry" font-family="'Courier New', Courier, monospace" font-size="8.5" fill="#9aa9bc">
+    <!-- Axle 1 Sensor Node -->
+    <g transform="translate(130, 580)">
+      <line x1="0" y1="0" x2="40" y2="0" stroke="#38bdf8" stroke-width="0.8"/>
+      <line x1="40" y1="0" x2="80" y2="40" stroke="#38bdf8" stroke-width="0.8"/>
+      <circle cx="0" cy="0" r="2" fill="#38bdf8"/>
+      <text x="-110" y="3" fill="#38bdf8" letter-spacing="1">AXLE.01 // SPEED: 0 km/h</text>
+      <text x="-110" y="14" fill="#627d98">BEARING TEMP: 28°C [NORM]</text>
+    </g>
+
+    <!-- Catenary Voltage Node -->
+    <g transform="translate(620, 95)">
+      <line x1="0" y1="0" x2="-40" y2="0" stroke="#38bdf8" stroke-width="0.8"/>
+      <line x1="-40" y1="0" x2="-75" y2="-20" stroke="#38bdf8" stroke-width="0.8"/>
+      <circle cx="0" cy="0" r="2" fill="#38bdf8"/>
+      <text x="10" y="2" fill="#38bdf8" letter-spacing="1">CATENARY // 25.2 kV AC</text>
+      <text x="10" y="13" fill="#627d98">PANTOGRAPH: ELEVATED</text>
+    </g>
+
+    <!-- Braking System Node -->
+    <g transform="translate(180, 420)">
+      <line x1="0" y1="0" x2="50" y2="0" stroke="#38bdf8" stroke-width="0.8"/>
+      <line x1="50" y1="0" x2="90" y2="45" stroke="#38bdf8" stroke-width="0.8"/>
+      <circle cx="0" cy="0" r="2" fill="#38bdf8"/>
+      <text x="-130" y="3" fill="#38bdf8" letter-spacing="1">BP PRESSURE: 5.0 kg/cm²</text>
+      <text x="-130" y="14" fill="#627d98">FP PRESSURE: 6.0 kg/cm²</text>
+    </g>
+  </g>
+</svg>
